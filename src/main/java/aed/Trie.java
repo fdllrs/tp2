@@ -69,6 +69,8 @@ public class Trie {
     }
 
     public void agregar(String element){
+        boolean agregoNodo = false;
+
         int largoElem = element.length();
         char[] charList = element.toCharArray();
         
@@ -84,14 +86,28 @@ public class Trie {
                 Nodo nuevNodo = new Nodo(nodoActual);
                 nodoActual.hijos.set(charCode, nuevNodo);
                 nodoActual = nodoActual.hijos.get(charCode);
-                
+                agregoNodo = true;
             }
         }
-        nodoActual.valor = 1;
+        if(agregoNodo){
+            nodoActual.valor = 1;
+            tamaño++;}
+
         
     }
 
     public void eliminar(String element){
+
+
+
+
+
+
+
+
+
+
+        
         return;
     }
 

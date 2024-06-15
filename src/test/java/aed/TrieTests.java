@@ -10,10 +10,23 @@ public class TrieTests {
     void agregarYPertenece(){
         Trie triePrueba = new Trie();
         triePrueba.agregar("papu");
+        assertEquals(1, triePrueba.tamaño());
+        
         triePrueba.agregar("papurri");
+        assertEquals(2, triePrueba.tamaño());
+
         triePrueba.agregar("papurrris");
+        assertEquals(3, triePrueba.tamaño());
+
         triePrueba.agregar("eduardo");
+        assertEquals(4, triePrueba.tamaño());
+
+        triePrueba.agregar("eduardo");
+        assertEquals(4, triePrueba.tamaño());
+
         triePrueba.agregar("ajklsdhnajksdhkjASDHAJKSDHKJASDHKJASD");
+        assertEquals(5, triePrueba.tamaño());
+
 
         assertEquals(true, triePrueba.pertenece("papu"));
         assertEquals(true, triePrueba.pertenece("papurri"));
