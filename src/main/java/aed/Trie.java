@@ -3,14 +3,14 @@ package aed;
 import java.util.ArrayList;
 
 @SuppressWarnings("unused") // TEMPORAL
-public class Trie {
+public class Trie<T> {
 
     private int tamaño;
     private Nodo raiz = new Nodo();
 
 
     private class Nodo{
-        int valor; // <- REVISAR DESPUES
+        T valor; // <- REVISAR DESPUES
 
         Nodo padre;
 
@@ -20,7 +20,7 @@ public class Trie {
         //inicializar con un nodo padre    
         public Nodo(Nodo padre){
             this.padre = padre;
-            this.valor = 0;
+            this.valor = null;
 
             for(int i = 0; i < 256; i++){
                 this.hijos.add(null);
@@ -31,7 +31,7 @@ public class Trie {
         //inicializar vacío
         public Nodo(){
             this.padre = null;
-            this.valor = 0;
+            this.valor = null;
 
             for(int i = 0; i < 256; i++){
                 this.hijos.add(null);
@@ -50,9 +50,9 @@ public class Trie {
 
 
 
-    public boolean pertenece(String element){
-        int largoElem = element.length();
-        char[] charList = element.toCharArray();
+    public boolean pertenece(String clave){
+        int largoElem = clave.length();
+        char[] charList = clave.toCharArray();
         
         Nodo nodoActual = this.raiz;
 
@@ -65,14 +65,14 @@ public class Trie {
         
         
         
-        return (nodoActual != null && nodoActual.valor != 0);
+        return (nodoActual != null && nodoActual.valor != null);
     }
 
-    public void agregar(String element){
+    public void agregar(String clave, T valor){
         boolean agregoNodo = false;
 
-        int largoElem = element.length();
-        char[] charList = element.toCharArray();
+        int largoElem = clave.length();
+        char[] charList = clave.toCharArray();
         
         Nodo nodoActual = this.raiz;
 
@@ -89,30 +89,47 @@ public class Trie {
                 agregoNodo = true;
             }
         }
-        if(agregoNodo){
-            nodoActual.valor = 1;
-            tamaño++;}
-
+        if(agregoNodo){tamaño++;}
+            
+        nodoActual.valor = valor;
         
     }
 
-    public void eliminar(String element){
+    public void eliminar(String clave){
 
-
-
-
-
-
-
-
-
-
+        int largoElem = clave.length();
+        char[] charList = clave.toCharArray();
         
+        Nodo nodoActual = this.raiz;
+        
+
+        for(int i=0; i < largoElem; i++){
+
+
+
+
+        }
         return;
     }
 
-    public String obtener(String element){
-        return null;
+    public T obtener(String clave){
+        int largoElem = clave.length();
+        char[] charList = clave.toCharArray();
+        
+        Nodo nodoActual = this.raiz;
+
+        for(int i= 0; i < largoElem; i++){
+            int charCode = (int) charList[i];
+
+            if (nodoActual.hijos.get(charCode) != null) {
+                nodoActual = nodoActual.hijos.get(charCode);
+            }
+            else{
+                return null;
+            }
+        }
+
+        return nodoActual.valor;
     }
 
 
