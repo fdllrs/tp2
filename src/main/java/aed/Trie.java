@@ -2,7 +2,6 @@ package aed;
 
 import java.util.ArrayList;
 
-@SuppressWarnings("unused") // TEMPORAL
 public class Trie<T> {
 
     private int tamaño;
@@ -10,7 +9,7 @@ public class Trie<T> {
 
 
     private class Nodo{
-        T valor; // <- REVISAR DESPUES
+        T valor;
 
         Nodo padre;
 
@@ -83,8 +82,8 @@ public class Trie<T> {
                 nodoActual = nodoActual.hijos.get(charCode);
             }
             else{
-                Nodo nuevNodo = new Nodo(nodoActual);
-                nodoActual.hijos.set(charCode, nuevNodo);
+                Nodo nuevoNodo = new Nodo(nodoActual);
+                nodoActual.hijos.set(charCode, nuevoNodo);
                 nodoActual = nodoActual.hijos.get(charCode);
                 agregoNodo = true;
             }
@@ -104,11 +103,42 @@ public class Trie<T> {
         
 
         for(int i=0; i < largoElem; i++){
+            int charCode = (int) charList[i];
 
-
-
-
+            if (nodoActual.hijos.get(charCode) != null) {
+                nodoActual = nodoActual.hijos.get(charCode);
+            }
+            else{
+                return;
+            }
         }
+        if (nodoActual == null || nodoActual.valor == null){return;}
+
+
+        tamaño--;
+        nodoActual.valor = null;
+        
+        for(int i=largoElem - 1; i > 0; i--){
+            int charCode = (int) charList[i];
+            Nodo padre = nodoActual.padre;
+
+            Nodo nodoConSoloUnHijo = new Nodo();
+            nodoConSoloUnHijo.hijos.set(charCode, nodoActual);
+
+            nodoActual.padre = null;                    // borro ref hijo -> padre
+            
+            
+            if(padre.hijos.equals(nodoConSoloUnHijo.hijos)){     // si el padre tiene un unico hijo
+                padre.hijos.set(charCode, null); // borro ref padre -> hijo
+            }
+            else{return;}
+
+            nodoActual = padre;
+        }
+        
+
+
+
         return;
     }
 
