@@ -3,6 +3,7 @@ package aed;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 
@@ -46,27 +47,45 @@ public class TrieTests {
         assertEquals(false, triePrueba.pertenece("Matematica"));
     }
 
-
+    @Test
     void obtener(){
         Trie<ArrayList<Integer>> triePrueba = new Trie<ArrayList<Integer>>();
 
-        triePrueba.agregar("CS computación", new ArrayList<Integer>(3));
+        
+
+        triePrueba.agregar("CS computación", new ArrayList<Integer>(Arrays.asList(4,2,6)));
         assertEquals(1, triePrueba.tamaño());
         
-        triePrueba.agregar("CS Datos", new ArrayList<Integer>(3));
+        triePrueba.agregar("CS Datos", new ArrayList<Integer>(Arrays.asList(6,1,1)));
         assertEquals(2, triePrueba.tamaño());
 
-        triePrueba.agregar("Matemática", new ArrayList<Integer>(3));
+        triePrueba.agregar("Matemática", new ArrayList<Integer>(Arrays.asList(1,0,3)));
         assertEquals(3, triePrueba.tamaño());
 
-        triePrueba.agregar("Biología", new ArrayList<Integer>(3));
+        triePrueba.agregar("Biología", new ArrayList<Integer>(Arrays.asList(4,122,60)));
         assertEquals(4, triePrueba.tamaño());
 
-        triePrueba.agregar("Biología", new ArrayList<Integer>(3));
+        triePrueba.agregar("Biología", new ArrayList<Integer>(Arrays.asList(400,2000,60000)));
         assertEquals(4, triePrueba.tamaño());
 
-        triePrueba.agregar("Alimentos", new ArrayList<Integer>(3));
+        triePrueba.agregar("Alimentos", new ArrayList<Integer>(Arrays.asList(0,0,0)));
         assertEquals(5, triePrueba.tamaño());
+
+        assertEquals(new ArrayList<Integer>(Arrays.asList(4,2,6)), triePrueba.obtener("CS computación"));
+        assertEquals(new ArrayList<Integer>(Arrays.asList(6,1,1)), triePrueba.obtener("CS Datos"));
+        assertEquals(new ArrayList<Integer>(Arrays.asList(1,0,3)), triePrueba.obtener("Matemática"));
+        assertEquals(new ArrayList<Integer>(Arrays.asList(400,2000,60000)), triePrueba.obtener("Biología"));
+        assertEquals(new ArrayList<Integer>(Arrays.asList(0,0,0)), triePrueba.obtener("Alimentos"));
+
+        assertEquals(null, triePrueba.obtener("CS computacion"));
+        assertEquals(null, triePrueba.obtener("CS computació"));
+        assertEquals(null, triePrueba.obtener("CS datos"));
+        assertEquals(null, triePrueba.obtener("matemática"));
+        assertEquals(null, triePrueba.obtener("Biologia"));
+        assertEquals(null, triePrueba.obtener("Alimentoss"));
+        assertEquals(null, triePrueba.obtener("lernajlkaenrkjnrkjerer"));
+
+
 
 
     }
