@@ -153,5 +153,25 @@ public class TrieTests {
 
     }
 
+
+
+    @Test
+    void pertenece2(){
+        Trie<Integer> triePrueba = new Trie<Integer>();
+
+        triePrueba.agregar("abc", 1);
+        triePrueba.agregar("abcd", 2);
+        triePrueba.agregar("abcde", 3);
+        triePrueba.agregar("abcdefg", 4);
+
+
+        triePrueba.eliminar("abcde");
+
+        assertEquals(true, triePrueba.pertenece("abc"));
+
+    }
+
+
+
     
 }

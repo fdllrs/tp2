@@ -68,7 +68,6 @@ public class Trie<T> {
     }
 
     public void agregar(String clave, T valor){
-        boolean agregoNodo = false;
 
         int largoElem = clave.length();
         char[] charList = clave.toCharArray();
@@ -85,10 +84,11 @@ public class Trie<T> {
                 Nodo nuevoNodo = new Nodo(nodoActual);
                 nodoActual.hijos.set(charCode, nuevoNodo);
                 nodoActual = nodoActual.hijos.get(charCode);
-                agregoNodo = true;
             }
         }
-        if(agregoNodo){tamaño++;}
+
+
+        if(nodoActual.valor == null){tamaño++;}
             
         nodoActual.valor = valor;
         
@@ -122,14 +122,16 @@ public class Trie<T> {
             int charCode = (int) charList[i];
             Nodo padre = nodoActual.padre;
 
-            Nodo nodoConSoloUnHijo = new Nodo();
-            nodoConSoloUnHijo.hijos.set(charCode, nodoActual);
+            boolean eliminarNodo = true;
 
-            nodoActual.padre = null;                    // borro ref hijo -> padre
-            
-            
-            if(padre.hijos.equals(nodoConSoloUnHijo.hijos)){     // si el padre tiene un unico hijo
+            for(i=0; i<256; i++){ // medio asqueroso
+                if(padre.hijos.get(i) != null){
+                    eliminarNodo = false;
+                }
+            }
+            if(eliminarNodo){     // si el padre tiene un unico hijo
                 padre.hijos.set(charCode, null); // borro ref padre -> hijo
+                nodoActual.padre = null;        // borro ref hijo -> padre
             }
             else{return;}
 
