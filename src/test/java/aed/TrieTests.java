@@ -9,15 +9,13 @@ import org.junit.jupiter.api.Test;
 
 public class TrieTests {
 
-
     @Test
-    void pertenece(){
+    void pertenece() {
         Trie<Integer> triePrueba = new Trie<Integer>();
-
 
         triePrueba.agregar("CS Computación", 32);
         assertEquals(1, triePrueba.tamaño());
-        
+
         triePrueba.agregar("CS Datos", 1);
         assertEquals(2, triePrueba.tamaño());
 
@@ -32,7 +30,6 @@ public class TrieTests {
 
         triePrueba.agregar("Alimentos", 0);
         assertEquals(5, triePrueba.tamaño());
-
 
         assertEquals(true, triePrueba.pertenece("CS Computación"));
         assertEquals(true, triePrueba.pertenece("CS Datos"));
@@ -49,33 +46,32 @@ public class TrieTests {
     }
 
     @Test
-    void obtener(){
+    void obtener() {
         Trie<ArrayList<Integer>> triePrueba = new Trie<ArrayList<Integer>>();
-        
 
-        triePrueba.agregar("CS Computación", new ArrayList<Integer>(Arrays.asList(4,2,6)));
+        triePrueba.agregar("CS Computación", new ArrayList<Integer>(Arrays.asList(4, 2, 6)));
         assertEquals(1, triePrueba.tamaño());
-        
-        triePrueba.agregar("CS Datos", new ArrayList<Integer>(Arrays.asList(6,1,1)));
+
+        triePrueba.agregar("CS Datos", new ArrayList<Integer>(Arrays.asList(6, 1, 1)));
         assertEquals(2, triePrueba.tamaño());
 
-        triePrueba.agregar("Matemática", new ArrayList<Integer>(Arrays.asList(1,0,3)));
+        triePrueba.agregar("Matemática", new ArrayList<Integer>(Arrays.asList(1, 0, 3)));
         assertEquals(3, triePrueba.tamaño());
 
-        triePrueba.agregar("Biología", new ArrayList<Integer>(Arrays.asList(4,122,60)));
+        triePrueba.agregar("Biología", new ArrayList<Integer>(Arrays.asList(4, 122, 60)));
         assertEquals(4, triePrueba.tamaño());
 
-        triePrueba.agregar("Biología", new ArrayList<Integer>(Arrays.asList(400,2000,60000)));
+        triePrueba.agregar("Biología", new ArrayList<Integer>(Arrays.asList(400, 2000, 60000)));
         assertEquals(4, triePrueba.tamaño());
 
-        triePrueba.agregar("Alimentos", new ArrayList<Integer>(Arrays.asList(0,0,0)));
+        triePrueba.agregar("Alimentos", new ArrayList<Integer>(Arrays.asList(0, 0, 0)));
         assertEquals(5, triePrueba.tamaño());
 
-        assertEquals(new ArrayList<Integer>(Arrays.asList(4,2,6)), triePrueba.obtener("CS Computación"));
-        assertEquals(new ArrayList<Integer>(Arrays.asList(6,1,1)), triePrueba.obtener("CS Datos"));
-        assertEquals(new ArrayList<Integer>(Arrays.asList(1,0,3)), triePrueba.obtener("Matemática"));
-        assertEquals(new ArrayList<Integer>(Arrays.asList(400,2000,60000)), triePrueba.obtener("Biología"));
-        assertEquals(new ArrayList<Integer>(Arrays.asList(0,0,0)), triePrueba.obtener("Alimentos"));
+        assertEquals(new ArrayList<Integer>(Arrays.asList(4, 2, 6)), triePrueba.obtener("CS Computación"));
+        assertEquals(new ArrayList<Integer>(Arrays.asList(6, 1, 1)), triePrueba.obtener("CS Datos"));
+        assertEquals(new ArrayList<Integer>(Arrays.asList(1, 0, 3)), triePrueba.obtener("Matemática"));
+        assertEquals(new ArrayList<Integer>(Arrays.asList(400, 2000, 60000)), triePrueba.obtener("Biología"));
+        assertEquals(new ArrayList<Integer>(Arrays.asList(0, 0, 0)), triePrueba.obtener("Alimentos"));
 
         assertEquals(null, triePrueba.obtener("CS computacion"));
         assertEquals(null, triePrueba.obtener("CS computació"));
@@ -85,19 +81,15 @@ public class TrieTests {
         assertEquals(null, triePrueba.obtener("Alimentoss"));
         assertEquals(null, triePrueba.obtener("lernajlkaenrkjnrkjerer"));
 
-
-
-
     }
 
     @Test
-    void eliminar(){
+    void eliminar() {
         Trie<Integer> triePrueba = new Trie<Integer>();
 
-        
         triePrueba.agregar("CS Computación", 32);
         assertEquals(1, triePrueba.tamaño());
-        
+
         triePrueba.agregar("CS Datos", 1);
         assertEquals(2, triePrueba.tamaño());
 
@@ -112,10 +104,6 @@ public class TrieTests {
 
         triePrueba.agregar("Alimentos", 0);
         assertEquals(5, triePrueba.tamaño());
-
-
-
-
 
         triePrueba.eliminar("Alimentos");
 
@@ -136,10 +124,6 @@ public class TrieTests {
         assertEquals(2, triePrueba.tamaño());
         assertEquals(null, triePrueba.obtener("CS Computación"));
 
-
-
-
-
         assertEquals(false, triePrueba.pertenece("CS computación"));
         assertEquals(false, triePrueba.pertenece("Biología"));
         assertEquals(false, triePrueba.pertenece("Alimentos"));
@@ -153,10 +137,8 @@ public class TrieTests {
 
     }
 
-
-
     @Test
-    void pertenece2(){
+    void pertenece2() {
         Trie<Integer> triePrueba = new Trie<Integer>();
 
         triePrueba.agregar("abc", 1);
@@ -164,14 +146,35 @@ public class TrieTests {
         triePrueba.agregar("abcde", 3);
         triePrueba.agregar("abcdefg", 4);
 
-
         triePrueba.eliminar("abcde");
 
         assertEquals(true, triePrueba.pertenece("abc"));
 
     }
 
+    @Test
+    void stringTest() {
+        Trie<Integer> triePrueba = new Trie<Integer>();
 
+        triePrueba.agregar("aaa", 1);
+        triePrueba.agregar("abc", 2);
+        triePrueba.agregar("abcd", 3);
+        triePrueba.agregar("abce", 4);
+        triePrueba.agregar("bus", 6);
+        triePrueba.agregar("busc", 7);
+        assertEquals("[aaa, abc, abcd, abce, bus, busc]", triePrueba.toString());
 
-    
+        triePrueba.eliminar("abc");
+        assertEquals("[aaa, abcd, abce, bus, busc]", triePrueba.toString());
+
+        String[] claves = { "Ciencias de la Computación", "Ciencias de Datos", "Matemática", "Biología", "zzz", "ZZZ" };
+
+        Trie<Integer> trie2 = new Trie<Integer>();
+        for (String clave : claves) {
+            trie2.agregar(clave, 1);
+        }
+
+        assertEquals("[Biología, Ciencias de Datos, Ciencias de la Computación, Matemática, ZZZ, zzz]",
+                trie2.toString());
+    }
 }
