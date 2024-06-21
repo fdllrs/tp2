@@ -1,245 +1,185 @@
 package aed;
 
-public class ListaEnlazada<T> {
-    Nodo primero;
-    Nodo ultimo;
-    int size;
+public class ListaEnlazada<T> implements Secuencia<T> {
+
+    private Nodo primerNodo;
+    private Nodo ultimoNodo;
+
+    private int size;
 
     private class Nodo {
-        T valor;
-        Nodo siguiente;
         Nodo anterior;
-    
-    private Nodo(T t) {
-        valor = t; 
-    }
-    
-     
-    
+        Nodo siguiente;
+        T valor;
+
+        public Nodo(T v) {
+            valor = v;
+            anterior = null;
+            siguiente = null;
+        }
     }
 
     public ListaEnlazada() {
-        primero = null; 
-        ultimo = null; 
-        size = 0; 
-        
+        size = 0;
+        primerNodo = null;
+        ultimoNodo = null;
 
     }
+
     public int longitud() {
-        return size;    
-           
+        return size;
     }
 
     public void agregarAdelante(T elem) {
-        Nodo nuevo = new Nodo(elem);
-        if (size == 1){
-            nuevo.siguiente = primero; 
-            ultimo = primero;  
-            primero = nuevo;        
-            ultimo.anterior = primero; 
-        }
-        else {
-            if (size == 0) {
-                primero = nuevo;
-            }
-            else{
-                nuevo.siguiente = primero;
-            primero.anterior = nuevo;
- 
-            
-            primero = nuevo;
-            } 
+        Nodo nuevoNodo = new Nodo(elem);
 
-        } 
-     
-        size = size +1;
+        if (size == 0) {
+            ultimoNodo = nuevoNodo;
+        } else {
+            primerNodo.anterior = nuevoNodo;
+            nuevoNodo.siguiente = primerNodo;
+        }
+        primerNodo = nuevoNodo;
+        size += 1;
     }
 
     public void agregarAtras(T elem) {
-        Nodo nuevo = new Nodo(elem);
-    
-        if (primero == null){
-            primero = nuevo;
-            
-      }
-         else {
-            if (primero.siguiente == null){
-                primero.siguiente = nuevo;
-                nuevo.anterior = primero; 
-                ultimo = nuevo;
-            
-            }
-            else{
-            Nodo actual = primero;
-            while (actual.siguiente != null) { 
-                actual = actual.siguiente; 
-            }
-            actual.siguiente = nuevo;
-            nuevo.anterior = actual;
-            ultimo = nuevo;     
-         }
-        }   
-         size = size +1;
+        Nodo nuevoNodo = new Nodo(elem);
+
+        if (size == 0) {
+            primerNodo = nuevoNodo;
+        } else {
+            ultimoNodo.siguiente = nuevoNodo;
+            nuevoNodo.anterior = ultimoNodo;
+        }
+        ultimoNodo = nuevoNodo;
+        size += 1;
     }
 
     public T obtener(int i) {
-        Nodo actual = primero; 
-        for (int r = 0; r < i; r++){ 
-            actual = actual.siguiente;     
-        } 
-        return actual.valor;
+        Nodo nodoActual = primerNodo;
 
+        for (int indice = 0; indice < i; indice++) {
+            nodoActual = nodoActual.siguiente;
+        }
+        return (nodoActual.valor);
     }
 
     public void eliminar(int i) {
-        Nodo actual = primero; 
-        for (int r = 0; r < i; r++) { 
-            actual = actual.siguiente; 
-        }
-        if ((actual == primero) &&(actual.siguiente != null) ){ 
-            primero = actual.siguiente; 
-            primero.anterior = null;
-        }
-        else {
-            if ((actual == primero) && (actual.siguiente == null)){
-                   primero = null;
-            }
-            else {
-                if (actual == ultimo){ 
-                    ultimo = actual.anterior; 
-                    ultimo.siguiente = null;
-                }
-                else{ 
-                 Nodo anterior1 = actual.anterior;
-                 Nodo siguiente1 = actual.siguiente;
-                 anterior1.siguiente = siguiente1;
-                 siguiente1.anterior = anterior1; 
-                }
-            }
-             
-        }
-       size = size - 1;
-    }   
+        Nodo nodoActual = primerNodo;
+        Nodo nodoAnterior;
+        Nodo nodoSiguiente;
 
-    public void modificarPosicion(int indice, T elem) {
-        Nodo actual = primero;
-        for(int n = 0; n < indice; n++){
-             actual = actual.siguiente;
+        if (size == 1) {
+            primerNodo = null;
+            ultimoNodo = null;
+            size -= 1;
+            return;
         }
-        actual.valor = elem;   
-    } 
+        for (int indice = 0; indice < i; indice++) {
+            nodoActual = nodoActual.siguiente;
+        }
+        if (nodoActual == primerNodo) {
+            primerNodo = nodoActual.siguiente;
+            primerNodo.anterior = null;
+        } else if (nodoActual == ultimoNodo) {
+            ultimoNodo = nodoActual.anterior;
+            ultimoNodo.siguiente = null;
+        } else {
+            nodoAnterior = nodoActual.anterior;
+            nodoSiguiente = nodoActual.siguiente;
+            nodoAnterior.siguiente = nodoSiguiente;
+            nodoSiguiente.anterior = nodoAnterior;
+        }
+
+        size -= 1;
+
+    }
+
+    public void modificarPosicion(int i, T elem) {
+
+        Nodo nodoActual = primerNodo;
+
+        for (int indice = 0; indice < i; indice++) {
+            nodoActual = nodoActual.siguiente;
+        }
+
+        nodoActual.valor = elem;
+
+    }
 
     public ListaEnlazada<T> copiar() {
-        return new ListaEnlazada<>(this);
+        ListaEnlazada<T> nuevaLista = new ListaEnlazada<T>();
+        Iterador<T> itListaOriginal = this.iterador();
+
+        while (itListaOriginal.haySiguiente()) {
+            T siguienteElemento = itListaOriginal.siguiente();
+            nuevaLista.agregarAtras(siguienteElemento);
+        }
+
+        return nuevaLista;
     }
 
     public ListaEnlazada(ListaEnlazada<T> lista) {
-        Nodo primer1 = new Nodo(lista.primero.valor);
-        primer1.anterior = null;
-        primer1.siguiente = lista.primero.siguiente;
-        Nodo ultimo1 = new Nodo(lista.ultimo.valor);
-        ultimo1.anterior = lista.ultimo.anterior;
-        ultimo1.siguiente = null;
-        this.primero = primer1;
-        this.ultimo = ultimo1;
-        this.size = lista.size;
-        
+        Iterador<T> itLista = lista.iterador();
+
+        while (itLista.haySiguiente()) {
+            T siguienteElemento = itLista.siguiente();
+            this.agregarAtras(siguienteElemento);
         }
-        
-    
+    }
 
     @Override
     public String toString() {
-             StringBuffer dbuffer = new StringBuffer();
-             Nodo actual = primero;
-             dbuffer.append("[");
-             for (int n = 0; n < size-1; n++) { 
-                 dbuffer.append(actual.valor);
-                 dbuffer.append(", ");
-                 actual = actual.siguiente;  
-             }
-             dbuffer.append(actual.valor);  
-             dbuffer.append("]");
-             return dbuffer.toString();       
-                
-                
+        Iterador<T> itLista = this.iterador();
+        StringBuffer buffer = new StringBuffer();
+
+        buffer.append("[");
+
+        while (itLista.haySiguiente()) {
+            T siguienteElemento = itLista.siguiente();
+            buffer.append(siguienteElemento.toString());
+            buffer.append(", ");
         }
-        
-    
+        buffer.delete(buffer.length() - 2, buffer.length());
+        buffer.append("]");
+
+        return buffer.toString();
+    }
 
     private class ListaIterador implements Iterador<T> {
-        int dedito;
-        
-        
-        private ListaIterador(){
-            this.dedito = 0;
+        Nodo actual;
+
+        public ListaIterador() {
+            actual = primerNodo;
         }
 
         public boolean haySiguiente() {
-            Nodo actual = primero; 
-            for (int n = 0; n<dedito; n++){
-                  actual = actual.siguiente;
-            }
-            if (actual != null){
-                return true;
-            }
-            else {
-               return false;
-            } 
-       
+            return actual != null;
         }
 
         public boolean hayAnterior() {
-            Nodo actual = primero;
-            if (dedito == size && size != 0) {
-                return true;
-            }
-            else {
-                if (actual == null){
-                return false;
-            } 
-            else {
-            for (int n = 0; n<dedito; n++){ 
-                  actual = actual.siguiente;
-            }
-            if (actual.anterior != null){
-                return true;
-            } 
-            else {
-               return false;
-            } 
+            return actual != primerNodo;
         }
-          }
-  } 
+
         public T siguiente() {
-           Nodo actual = primero;
-           for (int n = 0; n < dedito; n++){
+            T valorPrevio = actual.valor;
             actual = actual.siguiente;
-           }
-           this.dedito = dedito +1;
-           return actual.valor;
+            return valorPrevio;
         }
 
         public T anterior() {
-            Nodo actual = primero;
-            if (dedito == size){
-                return ultimo.valor;
+            if (actual == null) { // si pasa esto es pq "actual" es el ultimo nodo
+                actual = ultimoNodo;
+            } else {
+                actual = actual.anterior;
             }
-           else {
-            for (int n = 0; n < dedito; n++){
-            actual = actual.siguiente;
-           }
-           actual = actual.anterior;
-           this.dedito = dedito-1;
-           return actual.valor;
+            return actual.valor;
         }
     }
-}
-    public Iterador<T> iterador() {
-       return new ListaIterador(); 
-         
-      }
 
-    
+    public Iterador<T> iterador() {
+        return new ListaIterador();
+    }
 
 }
