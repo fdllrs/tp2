@@ -7,156 +7,180 @@ public class Trie<T> {
     private int tamaño;
     private Nodo raiz = new Nodo();
 
-
-    private class Nodo{
+    private class Nodo {
         T valor;
+
+        String palabra;
 
         Nodo padre;
 
-        ArrayList<Nodo> hijos = new ArrayList<Nodo>(256); //inicializados con null
+        ArrayList<Nodo> hijos = new ArrayList<Nodo>(256);
 
-
-        //inicializar con un nodo padre    
-        public Nodo(Nodo padre){
+        // inicializar con un nodo padre
+        public Nodo(Nodo padre) {
             this.padre = padre;
             this.valor = null;
 
-            for(int i = 0; i < 256; i++){
+            for (int i = 0; i < 256; i++) {
                 this.hijos.add(null);
             }
 
         }
-        
-        //inicializar vacío
-        public Nodo(){
+
+        // inicializar vacío
+        public Nodo() {
             this.padre = null;
             this.valor = null;
+            this.palabra = null;
 
-            for(int i = 0; i < 256; i++){
+            for (int i = 0; i < 256; i++) {
                 this.hijos.add(null);
             }
         }
 
     }
 
-    //inicializar vacío
-    public Trie(){
+    // inicializar vacío
+    public Trie() {
         this.tamaño = 0;
         this.raiz = new Nodo();
-                    
-        
+
     }
 
-
-
-    public boolean pertenece(String clave){
+    public boolean pertenece(String clave) {
         int largoElem = clave.length();
         char[] charList = clave.toCharArray();
-        
+
         Nodo nodoActual = this.raiz;
 
-        for(int i= 0; i < largoElem; i++){
-            if (nodoActual == null) {break;}
+        for (int i = 0; i < largoElem; i++) {
+            if (nodoActual == null) {
+                break;
+            }
 
             int charCode = (int) charList[i];
             nodoActual = nodoActual.hijos.get(charCode);
         }
-        
-        
-        
+
         return (nodoActual != null && nodoActual.valor != null);
     }
 
-    public void agregar(String clave, T valor){
+    public void agregar(String clave, T valor) {
 
         int largoElem = clave.length();
         char[] charList = clave.toCharArray();
-        
+
         Nodo nodoActual = this.raiz;
 
-        for(int i= 0; i < largoElem; i++){
+        for (int i = 0; i < largoElem; i++) {
             int charCode = (int) charList[i];
 
             if (nodoActual.hijos.get(charCode) != null) {
                 nodoActual = nodoActual.hijos.get(charCode);
-            }
-            else{
+            } else {
                 Nodo nuevoNodo = new Nodo(nodoActual);
                 nodoActual.hijos.set(charCode, nuevoNodo);
                 nodoActual = nodoActual.hijos.get(charCode);
             }
         }
 
+        if (nodoActual.valor == null) {
+            tamaño++;
+        }
 
-        if(nodoActual.valor == null){tamaño++;}
-            
         nodoActual.valor = valor;
-        
+        nodoActual.palabra = clave;
     }
 
-    public void eliminar(String clave){
+    public String[] toStringArray() {
+        int nivel = 0;
+        String[] palabras = new String[tamaño];
+        ArrayList<String> arrayPalabras = new ArrayList<String>(tamaño);
+
+        stringRecursivo(raiz, nivel, arrayPalabras);
+        for (int i = 0; i < tamaño; i++) {
+            palabras[i] = arrayPalabras.get(i);
+        }
+
+        return palabras;
+
+    }
+
+    private void stringRecursivo(Nodo nodo, int nivel, ArrayList<String> listaPalabras) {
+
+        if (nodo.valor != null) {
+            listaPalabras.add(nodo.palabra);
+        }
+
+        for (int j = 0; j < 256; j++) {
+
+            if (nodo.hijos.get(j) != null) {
+                stringRecursivo(nodo.hijos.get(j), nivel + 1, listaPalabras);
+            }
+        }
+
+    }
+
+    public void eliminar(String clave) {
 
         int largoElem = clave.length();
         char[] charList = clave.toCharArray();
-        
-        Nodo nodoActual = this.raiz;
-        
 
-        for(int i=0; i < largoElem; i++){
+        Nodo nodoActual = this.raiz;
+
+        for (int i = 0; i < largoElem; i++) {
             int charCode = (int) charList[i];
 
             if (nodoActual.hijos.get(charCode) != null) {
                 nodoActual = nodoActual.hijos.get(charCode);
-            }
-            else{
+            } else {
                 return;
             }
         }
-        if (nodoActual == null || nodoActual.valor == null){return;}
-
+        if (nodoActual == null || nodoActual.valor == null) {
+            return;
+        }
 
         tamaño--;
         nodoActual.valor = null;
-        
-        for(int i=largoElem - 1; i > 0; i--){
+        nodoActual.palabra = null;
+
+        for (int i = largoElem - 1; i > 0; i--) {
             int charCode = (int) charList[i];
             Nodo padre = nodoActual.padre;
 
             boolean eliminarNodo = true;
 
-            for(i=0; i<256; i++){ // medio asqueroso
-                if(padre.hijos.get(i) != null){
+            for (int j = 0; j < 256; j++) { // medio asqueroso
+                if (padre.hijos.get(j) != null) {
                     eliminarNodo = false;
                 }
             }
-            if(eliminarNodo){     // si el padre tiene un unico hijo
+            if (eliminarNodo) { // si el padre tiene un unico hijo
                 padre.hijos.set(charCode, null); // borro ref padre -> hijo
-                nodoActual.padre = null;        // borro ref hijo -> padre
+                nodoActual.padre = null; // borro ref hijo -> padre
+            } else {
+                return;
             }
-            else{return;}
 
             nodoActual = padre;
         }
-        
-
-
 
         return;
     }
 
-    public T obtener(String clave){
+    public T obtener(String clave) {
         int largoElem = clave.length();
         char[] charList = clave.toCharArray();
-        
+
         Nodo nodoActual = this.raiz;
 
-        for(int i= 0; i < largoElem; i++){
+        for (int i = 0; i < largoElem; i++) {
             int charCode = (int) charList[i];
 
             if (nodoActual.hijos.get(charCode) != null) {
                 nodoActual = nodoActual.hijos.get(charCode);
-            }
-            else{
+            } else {
                 return null;
             }
         }
@@ -164,11 +188,7 @@ public class Trie<T> {
         return nodoActual.valor;
     }
 
-
-    
-    public int tamaño(){
+    public int tamaño() {
         return tamaño;
     }
-
-
 }
