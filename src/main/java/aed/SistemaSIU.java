@@ -1,11 +1,13 @@
 package aed;
 
 public class SistemaSIU {
-    Trie<Trie<DatosMateria>> Carreras; // string es la clave. no deberia ir algo que diga materias, pues es cosa del
-                                       // trie carreras
+
+    // string es la clave. no deberia ir algo que diga materias, pues es cosa del
+    // trie carreras
+    Trie<Trie<DatosMateria>> Carreras;
     Trie<Integer> Estudiantes;
 
-    public enum CargoDocente { // si no pongo public, el metodo agregar dice non public api
+    public enum CargoDocente {
         AY2(30, 3),
         AY1(20, 2),
         JTP(100, 1),
@@ -29,44 +31,55 @@ public class SistemaSIU {
 
     }
 
-    // el error estaba en que, lo que se pone como T es lo que debes definir, y en
-    // este caso era el valor.
-
     public SistemaSIU(InfoMateria[] infoMaterias, String[] libretasUniversitarias) {
         Trie<Trie<DatosMateria>> CarrerasT = new Trie<Trie<DatosMateria>>();
         Trie<Integer> EstudiantesTotal = new Trie<Integer>();
+
         for (int n = 0; n < infoMaterias.length; n++) {
-            DatosMateria Datos = new DatosMateria(); // creo un nuevo "DATOSMATERIA" donde esta el valor de la clave de
-                                                     // cada carrera y sus otros nombres
-            ParCarreraMateria[] Materia = infoMaterias[n].getParesCarreraMateria(); // array de pares de materias
+
+            // creo un nuevo "DATOSMATERIA" donde esta el valor de la clave de cada carrera
+            // y sus otros nombres
+            DatosMateria Datos = new DatosMateria();
+
+            ParCarreraMateria[] Materia = infoMaterias[n].getParesCarreraMateria();
 
             for (int j = 0; j < Materia.length; j++) {
-                ListaEnlazada<Trie<DatosMateria>> Vinculos = Datos.VinculosAMaterias(); // pongo "vinculos" para
-                                                                                        // modificar en datos, y agregar
-                                                                                        // un puntero mas de ese nombre
-                                                                                        // alternativo
-                if (CarrerasT.pertenece(Materia[j].getCarrera())) { // si ya esta, solo agrego.
-                    Trie<DatosMateria> ClaveMaterias = CarrerasT.obtener(Materia[j].getCarrera()); // Trie de materias,
-                                                                                                   // con aliasing
-                    Vinculos.agregarAdelante(ClaveMaterias); // el trie de Materias que ya estaba
-                    ClaveMaterias.agregar(Materia[j].getNombreMateria(), Datos); // en claveMaterias, agrego el nombre y
-                                                                                 // los datos. //pero si ya esta,
-                                                                                 // entonces no debo hacer eso
+
+                // pongo "vinculos" para modificar en datos, y agregar un puntero mas de ese
+                // nombre alternativo
+                ListaEnlazada<Trie<DatosMateria>> Vinculos = Datos.VinculosAMaterias();
+
+                // si ya esta, solo agrego.
+                if (CarrerasT.pertenece(Materia[j].getCarrera())) {
+
+                    // Trie de materias, con aliasing
+                    Trie<DatosMateria> ClaveMaterias = CarrerasT.obtener(Materia[j].getCarrera());
+
+                    // el trie de Materias que ya estaba
+                    Vinculos.agregarAdelante(ClaveMaterias);
+
+                    // en claveMaterias, agrego el nombre y los datos. pero si ya esta, entonces no
+                    // debo hacer eso
+                    ClaveMaterias.agregar(Materia[j].getNombreMateria(), Datos);
 
                 } else {
-                    Trie<DatosMateria> TrieMaterias = new Trie<DatosMateria>(); // creo un trie de Materias,
-                    Vinculos.agregarAdelante(TrieMaterias);// agrego ese nuevo trie a "vinculo"
-                    TrieMaterias.agregar(Materia[j].getNombreMateria(), Datos); // pongo los datos, con la direccion del
-                                                                                // trie. lo que modifique en datos,
-                                                                                // deberia modificar en ese trie.
-                    CarrerasT.agregar(Materia[j].getCarrera(), TrieMaterias); // agrego a carrera, la materia y el trie
-                                                                              // como valor
+                    Trie<DatosMateria> TrieMaterias = new Trie<DatosMateria>();
+                    Vinculos.agregarAdelante(TrieMaterias);
+
+                    // pongo los datos, con la direccion del trie. lo que modifique en datos,
+                    // deberia modificar en ese trie.
+                    TrieMaterias.agregar(Materia[j].getNombreMateria(), Datos);
+
+                    // agrego a carrera, la materia y el trie como valor
+                    CarrerasT.agregar(Materia[j].getCarrera(), TrieMaterias);
                 }
             }
         }
-        // -----------------------------------
+
         for (int C = 0; C < libretasUniversitarias.length; C++) {
-            EstudiantesTotal.agregar(libretasUniversitarias[C], 0);// sin materias donde se inscribio a la hora de crear
+
+            // sin materias donde se inscribio a la hora de crear
+            EstudiantesTotal.agregar(libretasUniversitarias[C], 0);
         }
         this.Estudiantes = EstudiantesTotal;
         this.Carreras = CarrerasT;
@@ -80,74 +93,80 @@ public class SistemaSIU {
     }
 
     public void inscribir(String estudiante, String carrera, String materia) {
-        DatosMateria Datos = ObtenerValorMateria(carrera, materia); // ingresar a los datos es O(\n\ + \m\)
+        DatosMateria Datos = ObtenerValorMateria(carrera, materia); // ingresar a los datos es O(|n| + |m|)
         Datos.SumarEstudianteYOcuparCupo(estudiante); // O(1)
-        int MateriasDeEstudiante = Estudiantes.obtener(estudiante); // acotado la LU entonces es O(1)
-        Estudiantes.agregar(estudiante, MateriasDeEstudiante + 1); // SUmo 1 a la cantidad de materias inscriptas del
-                                                                   // estudiante.
-        // esto puedeser O(1) + O(1),
+        int MateriasDeEstudiante = Estudiantes.obtener(estudiante); // LU acotado, O(1)
+        Estudiantes.agregar(estudiante, MateriasDeEstudiante + 1); // O(1)
 
     }
 
     public void agregarDocente(CargoDocente cargo, String carrera, String materia) {
-        DatosMateria Datos = ObtenerValorMateria(carrera, materia);// O(\n\+\m\)
+        DatosMateria Datos = ObtenerValorMateria(carrera, materia);// O(|n| + |m|)
         Datos.SumarDocente(cargo.getIndexacion()); // suma 1 docente buscado desde su indice que lo identifica
         int NuevoMaximo = Datos.ObtenerCantidadDocente(cargo.getIndexacion()) * cargo.getSoporte();
-        for (CargoDocente Docente : CargoDocente.values()) { // en teoria este for recorre cada docente como si estarian
-                                                             // en un array /O(1)
-            int SoporteTotal = Datos.ObtenerCantidadDocente(Docente.getIndexacion()) * Docente.getSoporte(); // obtener
-                                                                                                             // el total
-                                                                                                             // soportable
-                                                                                                             // de ese
-                                                                                                             // tipo de
-                                                                                                             // docentes
-            if (SoporteTotal < NuevoMaximo) { // si tenemos un nuevo "maximo" entonces veremos los cupos de el luego de
-                                              // agregar, y si los demas son 0 se queda como esta el maximo.
+
+        // en teoria este for recorre cada docente como si estuvieran en un array - O(1)
+        for (CargoDocente Docente : CargoDocente.values()) {
+
+            // obtener el total soportable de ese tipo de docentes
+            int SoporteTotal = Datos.ObtenerCantidadDocente(Docente.getIndexacion()) * Docente.getSoporte();
+
+            // si tenemos un nuevo "maximo" entonces veremos los cupos de el luego
+            // deagregar, y si los demas son 0 se queda como esta el maximo.
+            if (SoporteTotal < NuevoMaximo) {
                 NuevoMaximo = SoporteTotal;
             }
         }
-        Datos.CambiarMaximo(NuevoMaximo); // si es el mismo, no cambiara, pues calcula el total y luego resta la
-                                          // cantidad de estudiantes que hay en ese momento.
+
+        // si es el mismo, no cambiará, pues calcula el total y luego resta la cantidad
+        // de estudiantes que hay en ese momento.
+        Datos.CambiarMaximo(NuevoMaximo);
 
     }
 
     public int[] plantelDocente(String materia, String carrera) {
-        DatosMateria Datos = ObtenerValorMateria(carrera, materia);// O(\n\ + \m\)
-        return Datos.CantidadDocente(); // devolver el array donde primero va el docente, jtp ayudante1 y ayudante 2 en
-                                        // ese orden
+        DatosMateria Datos = ObtenerValorMateria(carrera, materia); // O(|n| + |m|)
+
+        // devolver el array donde primero va el docente, jtp ayudante1 y ayudante 2 en
+        // ese orden
+        return Datos.CantidadDocente();
     }
 
     public void cerrarMateria(String materia, String carrera) {
         DatosMateria Datos = ObtenerValorMateria(carrera, materia); // O(|n| + |m|)
         ListaEnlazada<Trie<DatosMateria>> Vinculos = Datos.VinculosAMaterias(); // O(1)
         Iterador<Trie<DatosMateria>> Materia = Vinculos.iterador();
-        while (Materia.haySiguiente()) { // hice el it parandome y decir que si hay siguiente sea en el que
-                                         // estoy parado. en otros no funciona, al cambiar tener en cuenta esto.
+
+        // hice el it parandome y decir que si hay siguiente sea en el que estoy parado.
+        // en otros no funciona, al cambiar tener en cuenta esto.
+        while (Materia.haySiguiente()) {
             Trie<DatosMateria> AccesoRapidoAMaterias = Materia.siguiente();
-            AccesoRapidoAMaterias.eliminar(materia); // "para cada materia, recorrer cada una de la materia y sus
-                                                     // nombres alternativos. esto es la sumatoria (todo el while + esto
-                                                     // de eliminar)"
+
+            // "para cada materia, recorrer cada una de la materia y sus nombres
+            // alternativos. esto es la sumatoria (todo el while + esto de eliminar)"
+            AccesoRapidoAMaterias.eliminar(materia);
         }
 
         ListaEnlazada<String> EstudiantesEnMateria = Datos.EstudiantesEnMateria();
         Iterador<String> Estudiante = EstudiantesEnMateria.iterador();
         while (Estudiante.haySiguiente()) {
             String LU = Estudiante.siguiente();
-            Estudiantes.agregar(LU, (Estudiantes.obtener(LU)) - 1); // resto 1 a la cantidad de materias. al recorrer el
-                                                                    // trie, como es acotado sera O(1) siempre.
+
+            Estudiantes.agregar(LU, (Estudiantes.obtener(LU)) - 1); // O(1).
         }
 
     }
 
     public int inscriptos(String materia, String carrera) {
-        DatosMateria Datos = ObtenerValorMateria(carrera, materia); // O(\n\ + \m\)
+        DatosMateria Datos = ObtenerValorMateria(carrera, materia); // O(|n| + |m|)
         return Datos.CantidadEstudiantes(); // O(1)
     }
 
     public boolean excedeCupo(String materia, String carrera) {
-        DatosMateria Datos = ObtenerValorMateria(carrera, materia);// recorrer carrera y materia O(\n\ + \m\)
+
+        DatosMateria Datos = ObtenerValorMateria(carrera, materia);// recorrer carrera y materia O(|n| + |m|)
         int cuposDisponibles = Datos.Maximo(); // O(1)
-        return cuposDisponibles < 0; // puede ser 0 y quiere decir que aun no se excedio
+        return cuposDisponibles < 0; // puede ser 0 y quiere decir que aun no se excedió
 
     }
 
@@ -160,7 +179,7 @@ public class SistemaSIU {
     }
 
     public int materiasInscriptas(String estudiante) {
-        int CantidadMaterias = Estudiantes.obtener(estudiante); // O(1) pues las claves estan acotadas.
+        int CantidadMaterias = Estudiantes.obtener(estudiante); // LU acotado, O(1)
         return CantidadMaterias;
     }
 }

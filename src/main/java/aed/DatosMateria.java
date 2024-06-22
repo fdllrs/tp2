@@ -23,18 +23,19 @@ public class DatosMateria {
         return this.CargoMaximo;
     }
 
-    public void SumarEstudianteYOcuparCupo(String LU) { // resta al cargo a tener en cuenta y depaso suma la cantidad de
-                                                        // estudiantes de esa materia.
+    // resta al cargo a tener en cuenta y de paso suma la cantidad de estudiantes de
+    // esa materia.
+    public void SumarEstudianteYOcuparCupo(String LU) {
         this.CantidadDeEstudiantes = this.CantidadDeEstudiantes + 1;
         this.CargoMaximo = this.CargoMaximo - 1;
         EstudiantesEnMateria.agregarAdelante(LU);
     }
 
-    public void CambiarMaximo(int Maximo) { // cambiar el maximo.
+    public void CambiarMaximo(int Maximo) {
         this.CargoMaximo = Maximo - CantidadDeEstudiantes;
     }
 
-    public int ObtenerCantidadDocente(int Docente) { // obtener la cantidad de tal docente, O(1) por indexacion directa
+    public int ObtenerCantidadDocente(int Docente) { // O(1) por indexacion directa
         return CantidadDeDocentes[Docente];
     }
 
@@ -43,9 +44,8 @@ public class DatosMateria {
 
     }
 
-    public void SumarDocente(int Docente) {
-        CantidadDeDocentes[Docente] = CantidadDeDocentes[Docente] + 1; // aumenta al docente pasado en 1. //indexacion
-                                                                       // directa y sumo 1, O(1)
+    public void SumarDocente(int Docente) { // O(1) por indexacion directa
+        CantidadDeDocentes[Docente] = CantidadDeDocentes[Docente] + 1;
     }
 
     public ListaEnlazada<Trie<DatosMateria>> VinculosAMaterias() {
@@ -53,8 +53,7 @@ public class DatosMateria {
     }
 
     public int CantidadEstudiantes() {
-        return this.CantidadDeEstudiantes; // this por si, no da aliasing sin eso
+        return this.CantidadDeEstudiantes;
     }
 
 }
-// el objetivo es poder tener una estructura para poder tener un vinculo.
