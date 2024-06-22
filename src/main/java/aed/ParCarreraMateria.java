@@ -17,3 +17,4 @@ public class ParCarreraMateria {
         return this.carrera;
     }
 }
+// esto son 2 cosas los cuales, ambos son strings pero es un "modulo"

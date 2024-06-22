@@ -92,15 +92,17 @@ public class Trie<T> {
         nodoActual.palabra = clave;
     }
 
-    @Override
-    public String toString() {
+    public String[] toStringArray() {
         int nivel = 0;
-        ArrayList<String> palabras = new ArrayList<String>(tamaño);
-        stringRecursivo(raiz, nivel, palabras);
+        String[] palabras = new String[tamaño];
+        ArrayList<String> arrayPalabras = new ArrayList<String>(tamaño);
 
-        System.out.println(palabras);
+        stringRecursivo(raiz, nivel, arrayPalabras);
+        for (int i = 0; i < tamaño; i++) {
+            palabras[i] = arrayPalabras.get(i);
+        }
 
-        return palabras.toString();
+        return palabras;
 
     }
 
@@ -189,5 +191,4 @@ public class Trie<T> {
     public int tamaño() {
         return tamaño;
     }
-
 }

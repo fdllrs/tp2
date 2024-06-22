@@ -162,19 +162,26 @@ public class TrieTests {
         triePrueba.agregar("abce", 4);
         triePrueba.agregar("bus", 6);
         triePrueba.agregar("busc", 7);
-        assertEquals("[aaa, abc, abcd, abce, bus, busc]", triePrueba.toString());
+
+        String[] prueba = new String[] { "aaa", "abc", "abcd", "abce", "bus", "busc" };
+
+        assertArrayEquals(prueba, triePrueba.toStringArray());
 
         triePrueba.eliminar("abc");
-        assertEquals("[aaa, abcd, abce, bus, busc]", triePrueba.toString());
 
-        String[] claves = { "Ciencias de la Computación", "Ciencias de Datos", "Matemática", "Biología", "zzz", "ZZZ" };
+        String[] prueba2 = new String[] { "aaa", "abcd", "abce", "bus", "busc" };
+        assertArrayEquals(prueba2, triePrueba.toStringArray());
+
+        String[] claves = { "Ciencias de la Computación", "Ciencias de Datos",
+                "Matemática", "Biología", "zzz", "ZZZ" };
 
         Trie<Integer> trie2 = new Trie<Integer>();
+
         for (String clave : claves) {
             trie2.agregar(clave, 1);
         }
-
-        assertEquals("[Biología, Ciencias de Datos, Ciencias de la Computación, Matemática, ZZZ, zzz]",
-                trie2.toString());
+        String[] prueba3 = new String[] { "Biología", "Ciencias de Datos", "Ciencias de la Computación", "Matemática",
+                "ZZZ", "zzz" };
+        assertArrayEquals(prueba3, trie2.toStringArray());
     }
 }

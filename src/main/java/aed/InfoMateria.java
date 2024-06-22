@@ -12,3 +12,4 @@ public class InfoMateria{
         return this.paresCarreraMateria;
     }
 }
+// esto es un tipo que tiene como atributo un array o algo asi, que solo es una lista. 
