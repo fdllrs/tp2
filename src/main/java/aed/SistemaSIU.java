@@ -2,8 +2,6 @@ package aed;
 
 public class SistemaSIU {
 
-    // string es la clave. no deberia ir algo que diga materias, pues es cosa del
-    // trie carreras
     Trie<Trie<DatosMateria>> Carreras;
     Trie<Integer> Estudiantes;
 
@@ -32,57 +30,41 @@ public class SistemaSIU {
     }
 
     public SistemaSIU(InfoMateria[] infoMaterias, String[] libretasUniversitarias) {
-        Trie<Trie<DatosMateria>> CarrerasT = new Trie<Trie<DatosMateria>>();
-        Trie<Integer> EstudiantesTotal = new Trie<Integer>();
+        Trie<Trie<DatosMateria>> listaCarreras = new Trie<Trie<DatosMateria>>();
+        Trie<Integer> listaEstudiantes = new Trie<Integer>();
 
-        for (int n = 0; n < infoMaterias.length; n++) {
-
-            // creo un nuevo "DATOSMATERIA" donde esta el valor de la clave de cada carrera
-            // y sus otros nombres
+        for (InfoMateria infoMateria : infoMaterias) {
             DatosMateria Datos = new DatosMateria();
 
-            ParCarreraMateria[] Materia = infoMaterias[n].getParesCarreraMateria();
+            ParCarreraMateria[] paresCarreraMateria = infoMateria.getParesCarreraMateria();
+            for (ParCarreraMateria parCarreraMateria : paresCarreraMateria) {
 
-            for (int j = 0; j < Materia.length; j++) {
+                String carrera = parCarreraMateria.getCarrera();
+                String materia = parCarreraMateria.getNombreMateria();
 
-                // pongo "vinculos" para modificar en datos, y agregar un puntero mas de ese
-                // nombre alternativo
-                ListaEnlazada<Trie<DatosMateria>> Vinculos = Datos.VinculosAMaterias();
+                if (listaCarreras.pertenece(carrera)) {
+                    Trie<DatosMateria> listaMaterias = listaCarreras.obtener(carrera);
+                    ParRefCarreraMateria par = new ParRefCarreraMateria(listaMaterias, materia);
+                    Datos.listaNombresMateria().agregarAdelante(par);
 
-                // si ya esta, solo agrego.
-                if (CarrerasT.pertenece(Materia[j].getCarrera())) {
-
-                    // Trie de materias, con aliasing
-                    Trie<DatosMateria> ClaveMaterias = CarrerasT.obtener(Materia[j].getCarrera());
-
-                    // el trie de Materias que ya estaba
-                    Vinculos.agregarAdelante(ClaveMaterias);
-
-                    // en claveMaterias, agrego el nombre y los datos. pero si ya esta, entonces no
-                    // debo hacer eso
-                    ClaveMaterias.agregar(Materia[j].getNombreMateria(), Datos);
-
+                    listaMaterias.agregar(materia, Datos);
                 } else {
-                    Trie<DatosMateria> TrieMaterias = new Trie<DatosMateria>();
-                    Vinculos.agregarAdelante(TrieMaterias);
+                    Trie<DatosMateria> nuevaCarrera = new Trie<DatosMateria>();
+                    ParRefCarreraMateria par = new ParRefCarreraMateria(nuevaCarrera, materia);
+                    Datos.listaNombresMateria().agregarAdelante(par);
 
-                    // pongo los datos, con la direccion del trie. lo que modifique en datos,
-                    // deberia modificar en ese trie.
-                    TrieMaterias.agregar(Materia[j].getNombreMateria(), Datos);
-
-                    // agrego a carrera, la materia y el trie como valor
-                    CarrerasT.agregar(Materia[j].getCarrera(), TrieMaterias);
+                    nuevaCarrera.agregar(materia, Datos);
+                    listaCarreras.agregar(carrera, nuevaCarrera);
                 }
+
             }
         }
 
-        for (int C = 0; C < libretasUniversitarias.length; C++) {
-
-            // sin materias donde se inscribio a la hora de crear
-            EstudiantesTotal.agregar(libretasUniversitarias[C], 0);
+        for (int i = 0; i < libretasUniversitarias.length; i++) {
+            listaEstudiantes.agregar(libretasUniversitarias[i], 0);
         }
-        this.Estudiantes = EstudiantesTotal;
-        this.Carreras = CarrerasT;
+        this.Estudiantes = listaEstudiantes;
+        this.Carreras = listaCarreras;
 
     }
 
@@ -134,21 +116,20 @@ public class SistemaSIU {
 
     public void cerrarMateria(String materia, String carrera) {
         DatosMateria Datos = ObtenerValorMateria(carrera, materia); // O(|n| + |m|)
-        ListaEnlazada<Trie<DatosMateria>> Vinculos = Datos.VinculosAMaterias(); // O(1)
-        Iterador<Trie<DatosMateria>> Materia = Vinculos.iterador();
+        Iterador<ParRefCarreraMateria> nombresMateria = Datos.listaNombresMateria().iterador();
 
-        // hice el it parandome y decir que si hay siguiente sea en el que estoy parado.
-        // en otros no funciona, al cambiar tener en cuenta esto.
-        while (Materia.haySiguiente()) {
-            Trie<DatosMateria> AccesoRapidoAMaterias = Materia.siguiente();
+        while (nombresMateria.haySiguiente()) {
+            ParRefCarreraMateria parRefCarreraMateria = nombresMateria.siguiente();
 
-            // "para cada materia, recorrer cada una de la materia y sus nombres
-            // alternativos. esto es la sumatoria (todo el while + esto de eliminar)"
-            AccesoRapidoAMaterias.eliminar(materia);
+            Trie<DatosMateria> refCarrera = parRefCarreraMateria.getRefCarrera();
+            String nombreMateria = parRefCarreraMateria.getMateria();
+
+            refCarrera.eliminar(nombreMateria);
         }
 
         ListaEnlazada<String> EstudiantesEnMateria = Datos.EstudiantesEnMateria();
         Iterador<String> Estudiante = EstudiantesEnMateria.iterador();
+
         while (Estudiante.haySiguiente()) {
             String LU = Estudiante.siguiente();
 
