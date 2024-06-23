@@ -26,40 +26,51 @@ public class SistemaSIU {
         public int getIndexacion() {
             return this.Indexacion;
         }
-
     }
 
+    // la multiplicación representa la longitud de cada palabra para cada
+    // iteración.
+    // por ejemplo |materias| < = > sumatoria de la longitud de cada materia.
+
+    // O(|materias|*|nombresMateria|*(|materia| + |carrera|) + |estudiantes|)
     public SistemaSIU(InfoMateria[] infoMaterias, String[] libretasUniversitarias) {
         Trie<Trie<DatosMateria>> listaCarreras = new Trie<Trie<DatosMateria>>();
         Trie<Integer> listaEstudiantes = new Trie<Integer>();
+
+        // O( |materias|*|nombresMateria|*(|m| + |c|) )
 
         for (InfoMateria infoMateria : infoMaterias) {
             DatosMateria Datos = new DatosMateria();
 
             ParCarreraMateria[] paresCarreraMateria = infoMateria.getParesCarreraMateria();
+
+            // O( |nombresMateria|*(|m| + |c|) )
             for (ParCarreraMateria parCarreraMateria : paresCarreraMateria) {
 
                 String carrera = parCarreraMateria.getCarrera();
                 String materia = parCarreraMateria.getNombreMateria();
 
-                if (listaCarreras.pertenece(carrera)) {
-                    Trie<DatosMateria> listaMaterias = listaCarreras.obtener(carrera);
+                if (listaCarreras.pertenece(carrera)) { // O(|m| + |c|)
+                    Trie<DatosMateria> listaMaterias = listaCarreras.obtener(carrera); // O(|c|)
+
                     ParRefCarreraMateria par = new ParRefCarreraMateria(listaMaterias, materia);
                     Datos.listaNombresMateria().agregarAdelante(par);
 
-                    listaMaterias.agregar(materia, Datos);
-                } else {
+                    listaMaterias.agregar(materia, Datos); // O(|m|)
+
+                } else { // O(|m| + |c|)
                     Trie<DatosMateria> nuevaCarrera = new Trie<DatosMateria>();
+
                     ParRefCarreraMateria par = new ParRefCarreraMateria(nuevaCarrera, materia);
                     Datos.listaNombresMateria().agregarAdelante(par);
 
-                    nuevaCarrera.agregar(materia, Datos);
-                    listaCarreras.agregar(carrera, nuevaCarrera);
+                    nuevaCarrera.agregar(materia, Datos); // O(|m|)
+                    listaCarreras.agregar(carrera, nuevaCarrera); // O(|c|)
                 }
 
             }
         }
-
+        // O(|E|)
         for (int i = 0; i < libretasUniversitarias.length; i++) {
             listaEstudiantes.agregar(libretasUniversitarias[i], 0);
         }
@@ -68,69 +79,66 @@ public class SistemaSIU {
 
     }
 
-    public DatosMateria ObtenerValorMateria(String carrera, String materia) {
+    public DatosMateria ObtenerValorMateria(String carrera, String materia) { // O(|c| + |m|)
         Trie<DatosMateria> TrieEstudiantes = Carreras.obtener(carrera);
         DatosMateria Datos = TrieEstudiantes.obtener(materia);
         return Datos;
     }
 
     public void inscribir(String estudiante, String carrera, String materia) {
-        DatosMateria Datos = ObtenerValorMateria(carrera, materia); // ingresar a los datos es O(|n| + |m|)
-        Datos.SumarEstudianteYOcuparCupo(estudiante); // O(1)
-        int MateriasDeEstudiante = Estudiantes.obtener(estudiante); // LU acotado, O(1)
-        Estudiantes.agregar(estudiante, MateriasDeEstudiante + 1); // O(1)
+        DatosMateria Datos = ObtenerValorMateria(carrera, materia); // O(|c| + |m|)
+
+        // LU acotado, O(1)
+        Datos.SumarEstudianteYOcuparCupo(estudiante);
+        int MateriasDeEstudiante = Estudiantes.obtener(estudiante);
+        Estudiantes.agregar(estudiante, MateriasDeEstudiante + 1);
 
     }
 
     public void agregarDocente(CargoDocente cargo, String carrera, String materia) {
-        DatosMateria Datos = ObtenerValorMateria(carrera, materia);// O(|n| + |m|)
-        Datos.SumarDocente(cargo.getIndexacion()); // suma 1 docente buscado desde su indice que lo identifica
-        int NuevoMaximo = Datos.ObtenerCantidadDocente(cargo.getIndexacion()) * cargo.getSoporte();
+        DatosMateria Datos = ObtenerValorMateria(carrera, materia);// O(|c| + |m|)
+        Datos.SumarDocente(cargo.getIndexacion());
+        int NuevoCupoMaximo = Datos.ObtenerCantidadDocente(cargo.getIndexacion()) * cargo.getSoporte();
 
-        // en teoria este for recorre cada docente como si estuvieran en un array - O(1)
-        for (CargoDocente Docente : CargoDocente.values()) {
+        for (CargoDocente Docente : CargoDocente.values()) {// O(1)
 
-            // obtener el total soportable de ese tipo de docentes
-            int SoporteTotal = Datos.ObtenerCantidadDocente(Docente.getIndexacion()) * Docente.getSoporte();
+            int CupoPorDocente = Datos.ObtenerCantidadDocente(Docente.getIndexacion()) * Docente.getSoporte();
 
-            // si tenemos un nuevo "maximo" entonces veremos los cupos de el luego
-            // deagregar, y si los demas son 0 se queda como esta el maximo.
-            if (SoporteTotal < NuevoMaximo) {
-                NuevoMaximo = SoporteTotal;
+            if (CupoPorDocente < NuevoCupoMaximo) {
+                NuevoCupoMaximo = CupoPorDocente;
             }
         }
 
-        // si es el mismo, no cambiará, pues calcula el total y luego resta la cantidad
-        // de estudiantes que hay en ese momento.
-        Datos.CambiarMaximo(NuevoMaximo);
+        Datos.ActualizarCupoDisponible(NuevoCupoMaximo);
 
     }
 
     public int[] plantelDocente(String materia, String carrera) {
-        DatosMateria Datos = ObtenerValorMateria(carrera, materia); // O(|n| + |m|)
+        DatosMateria Datos = ObtenerValorMateria(carrera, materia); // O(|c| + |m|)
 
-        // devolver el array donde primero va el docente, jtp ayudante1 y ayudante 2 en
-        // ese orden
         return Datos.CantidadDocente();
     }
 
+    // O(|c| + |nombresMateria|*|m| + |Em|)
+    // |nombresMateria|*|m| se refiere a recorrer la longitud de la materia para
+    // cada nombre alternativo.
     public void cerrarMateria(String materia, String carrera) {
-        DatosMateria Datos = ObtenerValorMateria(carrera, materia); // O(|n| + |m|)
+        DatosMateria Datos = ObtenerValorMateria(carrera, materia); // O(|c| + |m|)
         Iterador<ParRefCarreraMateria> nombresMateria = Datos.listaNombresMateria().iterador();
 
-        while (nombresMateria.haySiguiente()) {
+        while (nombresMateria.haySiguiente()) { // O(|nombresMateria|)
             ParRefCarreraMateria parRefCarreraMateria = nombresMateria.siguiente();
 
             Trie<DatosMateria> refCarrera = parRefCarreraMateria.getRefCarrera();
             String nombreMateria = parRefCarreraMateria.getMateria();
 
-            refCarrera.eliminar(nombreMateria);
+            refCarrera.eliminar(nombreMateria); // O(|m|)
         }
 
         ListaEnlazada<String> EstudiantesEnMateria = Datos.EstudiantesEnMateria();
         Iterador<String> Estudiante = EstudiantesEnMateria.iterador();
 
-        while (Estudiante.haySiguiente()) {
+        while (Estudiante.haySiguiente()) { // O(|Em|)
             String LU = Estudiante.siguiente();
 
             Estudiantes.agregar(LU, (Estudiantes.obtener(LU)) - 1); // O(1).
@@ -138,29 +146,29 @@ public class SistemaSIU {
 
     }
 
-    public int inscriptos(String materia, String carrera) {
-        DatosMateria Datos = ObtenerValorMateria(carrera, materia); // O(|n| + |m|)
-        return Datos.CantidadEstudiantes(); // O(1)
+    public int inscriptos(String materia, String carrera) { // O(|c| + |m|)
+        DatosMateria Datos = ObtenerValorMateria(carrera, materia);
+        return Datos.CantidadEstudiantes();
     }
 
-    public boolean excedeCupo(String materia, String carrera) {
+    public boolean excedeCupo(String materia, String carrera) { // O(|c| + |m|)
 
-        DatosMateria Datos = ObtenerValorMateria(carrera, materia);// recorrer carrera y materia O(|n| + |m|)
-        int cuposDisponibles = Datos.Maximo(); // O(1)
-        return cuposDisponibles < 0; // puede ser 0 y quiere decir que aun no se excedió
+        DatosMateria Datos = ObtenerValorMateria(carrera, materia);
+        int cupoDisponible = Datos.CupoDisponible();
+        return cupoDisponible < 0;
 
     }
 
-    public String[] carreras() {
+    public String[] carreras() { // O(|c|)
         return Carreras.toStringArray();
     }
 
-    public String[] materias(String carrera) {
+    public String[] materias(String carrera) { // O(|m|)
         return Carreras.obtener(carrera).toStringArray();
     }
 
-    public int materiasInscriptas(String estudiante) {
-        int CantidadMaterias = Estudiantes.obtener(estudiante); // LU acotado, O(1)
+    public int materiasInscriptas(String estudiante) { // LU acotado, O(1)
+        int CantidadMaterias = Estudiantes.obtener(estudiante);
         return CantidadMaterias;
     }
 }

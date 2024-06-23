@@ -4,47 +4,46 @@ public class DatosMateria {
     private int[] docentesPorCargo = new int[4];
     private int cupoDisponible;
     private int cantEstudiantes;
-    private ListaEnlazada<String> EstudiantesEnMateria;
+    private ListaEnlazada<String> listaLibretas;
     private ListaEnlazada<ParRefCarreraMateria> listaNombresMateria;
 
     public DatosMateria() {
         this.cupoDisponible = 0;
         this.cantEstudiantes = 0;
-        this.EstudiantesEnMateria = new ListaEnlazada<String>();
+        this.listaLibretas = new ListaEnlazada<String>();
         this.listaNombresMateria = new ListaEnlazada<ParRefCarreraMateria>();
     }
-    // todo es O(1) pues cada metodo hace operaciones acotadas.
+    // todo es O(1) pues cada metodo o bien hace operaciones acotadas o bien
+    // devuelve variables.
 
     public int[] CantidadDocente() {
         return this.docentesPorCargo;
     }
 
-    public int Maximo() {
+    public int CupoDisponible() {
         return this.cupoDisponible;
     }
 
-    // resta al cargo a tener en cuenta y de paso suma la cantidad de estudiantes de
-    // esa materia.
     public void SumarEstudianteYOcuparCupo(String LU) {
         this.cantEstudiantes = this.cantEstudiantes + 1;
         this.cupoDisponible = this.cupoDisponible - 1;
-        EstudiantesEnMateria.agregarAdelante(LU);
+        listaLibretas.agregarAdelante(LU);
     }
 
-    public void CambiarMaximo(int Maximo) {
-        this.cupoDisponible = Maximo - cantEstudiantes;
+    public void ActualizarCupoDisponible(int cupoActual) {
+        this.cupoDisponible = cupoActual - cantEstudiantes;
     }
 
-    public int ObtenerCantidadDocente(int Docente) { // O(1) por indexacion directa
+    public int ObtenerCantidadDocente(int Docente) {
         return docentesPorCargo[Docente];
     }
 
     public ListaEnlazada<String> EstudiantesEnMateria() {
-        return this.EstudiantesEnMateria;
+        return this.listaLibretas;
 
     }
 
-    public void SumarDocente(int Docente) { // O(1) por indexacion directa
+    public void SumarDocente(int Docente) {
         docentesPorCargo[Docente] = docentesPorCargo[Docente] + 1;
     }
 

@@ -11,8 +11,7 @@ public class ParRefCarreraMateria {
     }
 
     public Trie<DatosMateria> getRefCarrera() {
-
-        return refCarrera;
+        return this.refCarrera;
     }
 
     public String getMateria() {

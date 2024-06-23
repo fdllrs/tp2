@@ -1,5 +1,6 @@
 package aed;
 
+// cumple las complejidades de una lista enlazada 🤩
 public class ListaEnlazada<T> implements Secuencia<T> {
 
     private Nodo primerNodo;
@@ -30,7 +31,7 @@ public class ListaEnlazada<T> implements Secuencia<T> {
         return size;
     }
 
-    public void agregarAdelante(T elem) {
+    public void agregarAdelante(T elem) { // O(1)
         Nodo nuevoNodo = new Nodo(elem);
 
         if (size == 0) {
@@ -43,7 +44,7 @@ public class ListaEnlazada<T> implements Secuencia<T> {
         size += 1;
     }
 
-    public void agregarAtras(T elem) {
+    public void agregarAtras(T elem) { // O(1)
         Nodo nuevoNodo = new Nodo(elem);
 
         if (size == 0) {
@@ -56,21 +57,21 @@ public class ListaEnlazada<T> implements Secuencia<T> {
         size += 1;
     }
 
-    public T obtener(int i) {
+    public T obtener(int i) { // O(n)
         Nodo nodoActual = primerNodo;
 
-        for (int indice = 0; indice < i; indice++) {
+        for (int indice = 0; indice < i; indice++) { // O(i)
             nodoActual = nodoActual.siguiente;
         }
         return (nodoActual.valor);
     }
 
-    public void eliminar(int i) {
+    public void eliminar(int i) { // O(n)
         Nodo nodoActual = primerNodo;
         Nodo nodoAnterior;
         Nodo nodoSiguiente;
 
-        if (size == 1) {
+        if (size == 1) { // O(1)
             primerNodo = null;
             ultimoNodo = null;
             size -= 1;
@@ -96,7 +97,7 @@ public class ListaEnlazada<T> implements Secuencia<T> {
 
     }
 
-    public void modificarPosicion(int i, T elem) {
+    public void modificarPosicion(int i, T elem) { // O(n)
 
         Nodo nodoActual = primerNodo;
 
@@ -108,7 +109,7 @@ public class ListaEnlazada<T> implements Secuencia<T> {
 
     }
 
-    public ListaEnlazada<T> copiar() {
+    public ListaEnlazada<T> copiar() { // O(n)
         ListaEnlazada<T> nuevaLista = new ListaEnlazada<T>();
         Iterador<T> itListaOriginal = this.iterador();
 
@@ -120,34 +121,7 @@ public class ListaEnlazada<T> implements Secuencia<T> {
         return nuevaLista;
     }
 
-    public ListaEnlazada(ListaEnlazada<T> lista) {
-        Iterador<T> itLista = lista.iterador();
-
-        while (itLista.haySiguiente()) {
-            T siguienteElemento = itLista.siguiente();
-            this.agregarAtras(siguienteElemento);
-        }
-    }
-
-    @Override
-    public String toString() {
-        Iterador<T> itLista = this.iterador();
-        StringBuffer buffer = new StringBuffer();
-
-        buffer.append("[");
-
-        while (itLista.haySiguiente()) {
-            T siguienteElemento = itLista.siguiente();
-            buffer.append(siguienteElemento.toString());
-            buffer.append(", ");
-        }
-        buffer.delete(buffer.length() - 2, buffer.length());
-        buffer.append("]");
-
-        return buffer.toString();
-    }
-
-    private class ListaIterador implements Iterador<T> {
+    private class ListaIterador implements Iterador<T> { // O(1)
         Nodo actual;
 
         public ListaIterador() {
@@ -169,7 +143,7 @@ public class ListaEnlazada<T> implements Secuencia<T> {
         }
 
         public T anterior() {
-            if (actual == null) { // si pasa esto es pq "actual" es el ultimo nodo
+            if (actual == null) {
                 actual = ultimoNodo;
             } else {
                 actual = actual.anterior;
