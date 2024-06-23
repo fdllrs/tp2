@@ -1,0 +1,106 @@
+\documentclass[10pt,a4paper]{article}
+
+\input{AEDmacros}
+\usepackage{caratula} % Version modificada para usar las macros de algo1 de ~> https://github.com/bcardiff/dc-tex
+
+
+\titulo{Trabajo Práctico 2}
+\subtitulo{Diseño e implementación de estructuras}
+
+\fecha{\today}
+
+\materia{Algoritmos y Estructuras de Datos}
+\grupo{GRUPO EPICO - LSSPMSSLDBLMOLTIKQGP}
+
+\integrante{Condori, Alex}{163/23}{nocwe11@gmail.com}
+\integrante{Della Rosa, Facundo}{1317/23}{dellarosafacundo@gmail.com}
+\integrante{García, Lucía}{706/22}{luciiamar19@gmail.com}
+\integrante{Ser, Gonzalo Nicolás}{573/21}{ser.gonzalo10@gmail.com}
+
+
+\begin{document}
+
+\maketitle
+
+\section{Invariantes de Representación de las clases de Java}
+
+
+
+\subsection{Trie}
+
+\begin{itemize}
+	\item Todos los nodos tienen un array -hijos- de 256 posiciones que representan
+	      el código ASCII de cada caracter.
+	\item Los atributos palabra, padre y valor del nodo raíz son Null.
+	\item Agregar una clave que ya está en el Trie pisará su valor.
+	\item Los hijos de un nodo no pueden tener caminos que apunten a distinto nodo pero de igual carácter.
+	      Es decir, cada hijo conduce a una única palabra.
+	\item Los nodos que no son la raíz tienen un puntero a su nodo padre.
+	\item El tamaño del Trie siempre es igual a la cantidad de claves.
+	\item Intentar obtener una clave que no esté en el Trie retornará Null.
+	\item Cada clave está formada por el recorrido de los nodos correspondientes a sus caracteres.
+	\item Para cada nodo, su array de hijos tienen valores nulos en las posiciones que no llevan a una clave.
+	\item En el último nodo del recorrido de la clave se encuentra el valor y un String -palabra-
+	      correspondiente a dicha clave.
+	\item Cada nodo es alcanzable, es decir que se puede acceder a todos los nodos que estén en el Trie.
+\end{itemize}
+
+\subsection{DatosMateria}
+
+\begin{itemize}
+	\item La cantidad de estudiantes es siempre $\geq$ 0.
+	\item La longitud de la lista de libretas es igual a la cantidad de estudiantes.
+	\item La longitud de cada elemento de la lista de libretas tiene como máximo 7 caracteres (xxxx/xx).
+	\item La longitud del Array “Docentes por cargo” es 4.
+	\item Toda posición en el Array “Docentes por cargo” es un entero positivo.
+	\item El cupo disponible es igual al mínimo entre:
+	      250 * cantidad de Profesores, 100 * cantidad de JTPs, 20 * cantidad de Ayudantes de 1° y
+	      30 * cantidad de Ayudantes de 2° menos la cantidad de estudiantes.
+	\item Cada elemento de la lista “Nombres materia” contiene un puntero al Trie de materias
+	      de una carrera y el nombre que tiene la materia en dicha carrera.
+	\item Cumple el Invariante de Representación de \bfseries{ParRefCarreraMateria}.
+\end{itemize}
+
+\subsection{ParRefCarreraMateria}
+
+\begin{itemize}
+	\item Ref Carrera contiene una referencia a un Trie de materias de una carrera que pertenece
+	      al Trie Carreras del Sistema SIU.
+	\item Materia es el nombre que tiene una materia de la carrera referenciada por RefCarrera.
+	      La materia pertenece al Trie de materias de dicha carrera.
+\end{itemize}
+
+\subsection{ListaEnlazada}
+
+\begin{itemize}
+	\item Todos los nodos, exceptuando al Primero, son accesibles a través de su anterior.
+	\item Para 2 nodos a y b cualesquiera, si el siguiente de a es b, entonces
+	      el anterior de b es a.
+	\item El atributo Size es igual la cantidad de nodos.
+	\item El puntero siguiente al último nodo apunta a null.
+	\item El puntero anterior al primer nodo apunta a null.
+	\item Cada nodo tiene 2 punteros que apuntan hacia él.
+\end{itemize}
+
+\subsection{SistemaSiu}
+
+\begin{itemize}
+	\item el Trie Estudiantes contiene las libretas universitarias de todos los estudiantes
+	      inscriptos en el sistema. El valor de sus elementos es la cantidad de materias en las que
+	      está inscripto el estudiante con esa libreta.
+	\item Cada valor del trie “estudiantes” tiene como máximo 7 caracteres (xxxx/xx).
+	\item El Trie Carreras contiene los nombres de todas las carreras que están en el sistema.
+	      El valor de sus elementos es una referencia al Trie de materias.
+	\item El Trie de materias contiene todas las materias de una carrera que están en el sistema.
+	      El valor de sus elementos es del tipo DatosMateria.
+	\item Cada Trie cumple la invariante de representación del Trie escrito anteriormente.
+	\item Cada ListaEnlazada cumple la invariante de representación de listaEnlazada escrito anteriormente.
+	\item Cada DatosMateria cumple la invariante de representación de DatosMateria escrito anteriormente.
+\end{itemize}
+
+
+
+
+
+
+\end{document}
