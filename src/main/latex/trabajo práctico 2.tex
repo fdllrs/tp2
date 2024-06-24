@@ -99,8 +99,28 @@
 \end{itemize}
 
 
+\section{Aclaraciones}
 
+\subsection{complejidad temporal del constructor del SistemaSIU}
 
-
-
+El constructor del SistemSIU va recorriendo las carreras y materias en un orden distinto al que está
+en el enunciado. El algoritmo va recorriendo el Array de infoMaterias (el primer for loop).
+Cada elemento de este Array contiene a su vez un Array con paresCarreraMateria (el segundo for loop).
+\smallskip
+Cada parCarreraMateria tiene un String materia y un String carrera.
+Primero, o bien recorremos o bien creamos y agregamos la carrera al Trie Carreras, según corresponda.
+En total esto se realiza tantas veces como materias agreguemos a esa carrera.
+\begin{equation}
+	O(\sum_{c\in C}^{}\mid c\mid * \mid M_{c}\mid )
+\end{equation}
+Segundo, dentro del Trie de materias de esa carrera, agregamos la materia del par.
+Esta operación en total la realizamos tantas veces como materias vayamos a agregar (contando todos sus nombres).\\
+\begin{equation}
+	O(\sum_{m\in M}^{}\sum_{n\in N_{m}}^{}\mid n\mid)
+\end{equation}
+Por último, simplemente recorremos la lista de Estudiantes y agregamos cada String a una lista enlazada.
+\begin{equation}
+	O(E)
+\end{equation}
+En conjunto, las complejidades se suman y cumplen con lo pedido en el enunciado.
 \end{document}

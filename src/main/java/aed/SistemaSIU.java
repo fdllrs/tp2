@@ -28,17 +28,18 @@ public class SistemaSIU {
         }
     }
 
+    // La complejidad de el constructor está aclarada de forma más prolija en el
+    // PDF.
+
     // la multiplicación representa la longitud de cada palabra para cada
     // iteración.
     // por ejemplo |materias| < = > sumatoria de la longitud de cada materia.
-
     // O(|materias|*|nombresMateria|*(|materia| + |carrera|) + |estudiantes|)
     public SistemaSIU(InfoMateria[] infoMaterias, String[] libretasUniversitarias) {
         Trie<Trie<DatosMateria>> listaCarreras = new Trie<Trie<DatosMateria>>();
         Trie<Integer> listaEstudiantes = new Trie<Integer>();
 
         // O( |materias|*|nombresMateria|*(|m| + |c|) )
-
         for (InfoMateria infoMateria : infoMaterias) {
             DatosMateria Datos = new DatosMateria();
 
@@ -53,16 +54,16 @@ public class SistemaSIU {
                 if (listaCarreras.pertenece(carrera)) { // O(|m| + |c|)
                     Trie<DatosMateria> listaMaterias = listaCarreras.obtener(carrera); // O(|c|)
 
-                    ParRefCarreraMateria par = new ParRefCarreraMateria(listaMaterias, materia);
-                    Datos.listaNombresMateria().agregarAdelante(par);
+                    ParRefCarreraMateria par = new ParRefCarreraMateria(listaMaterias, materia); // O(1)
+                    Datos.listaNombresMateria().agregarAdelante(par); // O(1)
 
                     listaMaterias.agregar(materia, Datos); // O(|m|)
 
                 } else { // O(|m| + |c|)
                     Trie<DatosMateria> nuevaCarrera = new Trie<DatosMateria>();
 
-                    ParRefCarreraMateria par = new ParRefCarreraMateria(nuevaCarrera, materia);
-                    Datos.listaNombresMateria().agregarAdelante(par);
+                    ParRefCarreraMateria par = new ParRefCarreraMateria(nuevaCarrera, materia); // O(1)
+                    Datos.listaNombresMateria().agregarAdelante(par); // O(1)
 
                     nuevaCarrera.agregar(materia, Datos); // O(|m|)
                     listaCarreras.agregar(carrera, nuevaCarrera); // O(|c|)
